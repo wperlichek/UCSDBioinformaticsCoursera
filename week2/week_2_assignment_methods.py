@@ -244,3 +244,93 @@ print(str(res))
 
 # TODO :: write out the problem and solve it..
 # Needs a recursive implementation and mental model of the problem then it should be doable…
+
+
+def get_hamming_distance(str1, str2):
+    hamming_distance = 0
+    if len(str1) != len(str2):
+        return -1
+    else:
+        strs_len = len(str1)
+       
+        for idx in range(strs_len):
+            if str1[idx] != str2[idx]:
+                hamming_distance = hamming_distance + 1
+   
+    return hamming_distance
+
+def get_reverse_compliment(dna):
+    # ACTG
+    # Compliment the single strand 
+    # Reverse it
+    compliment = ""
+
+    for idx in range(len(dna)): 
+        if dna[idx] == "A":
+            compliment = compliment + "T"
+        elif dna[idx] == "T":
+            compliment = compliment + "A"
+        elif dna[idx] == "G":
+            compliment = compliment + "C"
+        else:
+            compliment = "G"
+    
+    reverse_compliment = compliment[::-1]
+    print("DNA: " + dna)
+    print("Reverse Compliment: " + reverse_compliment)
+    return reverse_compliment
+
+def neighbors(pattern, d):
+    nucleotides = ["A", "T", "G", "C"]
+    if d == 0:
+        return {pattern}
+    elif (len(pattern) == 1):
+        return {"A","T","G","C"}
+    else:
+        neighborhood = set()
+        suffix = pattern[1:len(pattern)]
+        suffixNeighbors = neighbors(suffix, d)
+        for suffixNeighbor in suffixNeighbors:
+            if get_hamming_distance(pattern[1:len(pattern)], suffixNeighbor) < d:
+                for nucleotide in nucleotides:
+                    neighborhood.add(nucleotide + suffixNeighbor)
+            else:
+                neighborhood.add(pattern[0] + suffixNeighbor)
+        return neighborhood
+                
+# print(str(neighbors("TATGTTGCGCAT", 2)))
+# # Runtime ~O(4^k)
+
+def frequent_words_with_mismatches_includes_reverse_compliments(pattern, k, d):
+    patterns = []
+    freq_map = {} 
+    pattern_len = len(pattern)
+
+    for idx in range(pattern_len-k):
+        substr = pattern[idx:idx+k]
+        neighborhood = neighbors(substr, d)
+        reverse_compliments = []
+
+        for neighbor in neighborhood:
+            reverse_compliments.append(get_reverse_compliment(neighbor))
+
+        neighborhood.update(reverse_compliments)
+
+        for neighbor in neighborhood:
+            if neighbor in freq_map:
+                freq_map[neighbor] += 1
+            else:
+                freq_map[neighbor] = 1
+
+    max_kmer_count = 0
+    for k,v in freq_map.items():
+        max_kmer_count = max(max_kmer_count, v)
+    
+    for k,v in freq_map.items():
+        if v == max_kmer_count:
+            patterns.append(k)
+
+    return patterns
+
+most_freq_kmers = frequent_words_with_mismatches_includes_reverse_compliments("ACGTTGCATGTCGCATGATGCATGAGAGCT", 4, 1)
+print(str(" ".join(most_freq_kmers)))

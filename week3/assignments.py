@@ -83,16 +83,9 @@ def motif_enumeration(dna, k, d):
 
 k = 0
 d = 0
-dna_strings = ""
 
-# 3 1
-# ATTTGGC TGCCTTA CGGTATC GAAAATT
-with open("motifs.txt") as File:
-    params = File.readline().strip()
-    dna_strings = File.readline().strip()
-
-params_as_array = params.split()
-dna_strings_as_array = dna_strings.split()
+# params_as_array = params.split()
+# dna_strings_as_array = dna_strings.split()
 
 # patterns = motif_enumeration(dna_strings_as_array, int(params_as_array[0]), int(params_as_array[1]))
 
@@ -102,8 +95,7 @@ dna_strings_as_array = dna_strings.split()
 # k = kmer size integer
 # dna_strings = collection of dna strings
 def median_string(k, dna_strings):
-    pattern = "" # the median string
-                 
+
     # Below "grand total" is the grand total for a kmer_pattern to dna_strings score
     # The lowest score possible taking a k_mer, iterating over every kmer every dna string in dna strings
     # We must match one per dna string
@@ -127,7 +119,6 @@ def median_string(k, dna_strings):
     # But above is like 4^k 4 choose k which is... really bad if say k is 10. It's ~1 million strings, doable and accurate
     # We want to generate kmer_pattern_from_possibilities outside of the nested loops
 
-    kmer_pattern_from_possibilities = generate_kmer_possibilities(k, "", [])
 
     
     # for each kmer_pattern in kmer_pattern_from_possibilities
@@ -136,23 +127,26 @@ def median_string(k, dna_strings):
                 # grand_total += lowest total of distance kmer_pattern_in_dna_string to kmer_pattern_from_possibilities
         # if grand_total < best grand total found, record new grand total and save pattern
 
+    kmer_pattern_from_possibilities = generate_kmer_possibilities(k, "", [])
     best_pattern = ""
     best_total_from_all_kmer_patterns = 2**31-1
 
     for kmer_pattern in kmer_pattern_from_possibilities:
-        grand_total_this_kmer_pattern = 2**31-1
+
+        grand_total_this_kmer_pattern = 0
+
         for dna_string in dna_strings:
-            lowest_found = 2**31-1
+            lowest_found_this_dna_string = 2**31-1
             for idx in range(len(dna_string)):
                 if idx+k <= len(dna_string):
-                    lowest_found = min(lowest_found, get_hamming_distance(dna_string[idx:idx+k], kmer_pattern))
-            grand_total += lowest_found
+                    lowest_found_this_dna_string = min(lowest_found_this_dna_string, get_hamming_distance(dna_string[idx:idx+k], kmer_pattern))
+            grand_total_this_kmer_pattern += lowest_found_this_dna_string
         
         if (grand_total_this_kmer_pattern < best_total_from_all_kmer_patterns):
             best_total_from_all_kmer_patterns = grand_total_this_kmer_pattern
             best_pattern = kmer_pattern
             
-    return best_pattern
+    return best_pattern # the median string
 
 # n = 3
 # 4 choose 3
@@ -169,3 +163,16 @@ def generate_kmer_possibilities(n, curr_string, all_possibilities):
 
 # result = generate_kmer_possibilities(3, "", [])
 # print(len(result))
+
+k = 0
+dna_strings = []
+
+with open("kmer_motifs.txt") as File:
+    k = File.readline().strip()
+    for line in File:
+        dna_strings.append(line.strip())
+
+print(k)
+print(dna_strings)
+
+print(median_string(int(k), dna_strings))

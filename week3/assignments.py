@@ -94,12 +94,13 @@ with open("motifs.txt") as File:
 params_as_array = params.split()
 dna_strings_as_array = dna_strings.split()
 
-patterns = motif_enumeration(dna_strings_as_array, int(params_as_array[0]), int(params_as_array[1]))
+# patterns = motif_enumeration(dna_strings_as_array, int(params_as_array[0]), int(params_as_array[1]))
 
-print(" ".join(patterns))
+# print(" ".join(patterns))
 
 
-
+# k = kmer size integer
+# dna_strings = collection of dna strings
 def median_string(k, dna_strings):
     pattern = "" # the median string
                  
@@ -122,7 +123,49 @@ def median_string(k, dna_strings):
     # TODO :: 
     # How to generate kmer_pattern_from_possibilities?
     # Do we know that this pattern must be derived from an existing string? Must it exist in some string?
+    # Or do we take k size and make all possibilities for it, and then search those?
+    # But above is like 4^k 4 choose k which is... really bad if say k is 10. It's ~1 million strings, doable and accurate
     # We want to generate kmer_pattern_from_possibilities outside of the nested loops
 
-    return pattern
+    kmer_pattern_from_possibilities = generate_kmer_possibilities(k, "", [])
 
+    
+    # for each kmer_pattern in kmer_pattern_from_possibilities
+        # for each dna_string in dna_strings
+            # for each kmer_pattern_in_dna_string in dna_string
+                # grand_total += lowest total of distance kmer_pattern_in_dna_string to kmer_pattern_from_possibilities
+        # if grand_total < best grand total found, record new grand total and save pattern
+
+    best_pattern = ""
+    best_total_from_all_kmer_patterns = 2**31-1
+
+    for kmer_pattern in kmer_pattern_from_possibilities:
+        grand_total_this_kmer_pattern = 2**31-1
+        for dna_string in dna_strings:
+            lowest_found = 2**31-1
+            for idx in range(len(dna_string)):
+                if idx+k <= len(dna_string):
+                    lowest_found = min(lowest_found, get_hamming_distance(dna_string[idx:idx+k], kmer_pattern))
+            grand_total += lowest_found
+        
+        if (grand_total_this_kmer_pattern < best_total_from_all_kmer_patterns):
+            best_total_from_all_kmer_patterns = grand_total_this_kmer_pattern
+            best_pattern = kmer_pattern
+            
+    return best_pattern
+
+# n = 3
+# 4 choose 3
+# Time Complexity: O(4^3)
+def generate_kmer_possibilities(n, curr_string, all_possibilities):
+    if (len(curr_string) < n):
+        nucleotides = ["G", "C", "T", "A"]
+        for nucleotide in nucleotides:
+            generate_kmer_possibilities(n, curr_string + nucleotide, all_possibilities)
+    else:
+        all_possibilities.append(curr_string)
+    
+    return all_possibilities
+
+# result = generate_kmer_possibilities(3, "", [])
+# print(len(result))

@@ -97,3 +97,32 @@ dna_strings_as_array = dna_strings.split()
 patterns = motif_enumeration(dna_strings_as_array, int(params_as_array[0]), int(params_as_array[1]))
 
 print(" ".join(patterns))
+
+
+
+def median_string(k, dna_strings):
+    pattern = "" # the median string
+                 
+    # Below "grand total" is the grand total for a kmer_pattern to dna_strings score
+    # The lowest score possible taking a k_mer, iterating over every kmer every dna string in dna strings
+    # We must match one per dna string
+    # We return the kmer which produced the lowest grand total
+
+    # for each kmer_pattern in kmer_pattern_from_possibilities
+        # for each dna_string in dna_strings
+            # for each kmer_pattern_in_dna_string in dna_string
+                # grand_total += lowest total of distance kmer_pattern_in_dna_string to kmer_pattern_from_possibilities
+        # if grand_total < best grand total found, record new grand total and save pattern
+
+    # n = len of kmer_pattern_from_possibilities
+    # l = len of dna_strings
+    # m = len of dna_string - k 
+    # Time Complexity: O(n*l*m)..
+
+    # TODO :: 
+    # How to generate kmer_pattern_from_possibilities?
+    # Do we know that this pattern must be derived from an existing string? Must it exist in some string?
+    # We want to generate kmer_pattern_from_possibilities outside of the nested loops
+
+    return pattern
+

@@ -164,15 +164,42 @@ def generate_kmer_possibilities(n, curr_string, all_possibilities):
 # result = generate_kmer_possibilities(3, "", [])
 # print(len(result))
 
-k = 0
+# k = 0
+# dna_strings = []
+
+# with open("kmer_motifs.txt") as File:
+#     k = File.readline().strip()
+#     for line in File:
+#         dna_strings.append(line.strip())
+
+# print(k)
+# print(dna_strings)
+
+# print(median_string(int(k), dna_strings))
+
+
+def median_string_crude(pattern, dna_strings):
+    total_distance = 0
+    k = len(pattern)
+    
+    for dna_string in dna_strings:
+        min_hamming_distance_found = 2**31-1
+        for idx in range(len(dna_string)-k):
+            dna_string_pattern = dna_string[idx:idx+k]
+            hamming_distance = get_hamming_distance(dna_string_pattern, pattern)
+            if hamming_distance < min_hamming_distance_found:
+                min_hamming_distance_found = hamming_distance
+        total_distance += min_hamming_distance_found
+            
+    return total_distance
+
+
+pattern = ""
 dna_strings = []
 
-with open("kmer_motifs.txt") as File:
-    k = File.readline().strip()
-    for line in File:
-        dna_strings.append(line.strip())
+with open("median_string.txt") as File: 
+    pattern = File.readline().strip()
+    dna_strings = File.readline().strip().split(" ")
 
-print(k)
-print(dna_strings)
-
-print(median_string(int(k), dna_strings))
+res = median_string_crude(pattern, dna_strings)
+print(str(res))

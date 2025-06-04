@@ -9,28 +9,26 @@ with open("profile.txt") as File:
     for line in File:
         profile.append(line.strip().split(" "))
 
-
 def most_probable_kmer_pattern(text, k, profile):
-
-    # iterate over every substring of text from 0 to text-k length
-    # for each character in the substring
-    # 
 
     highest_probability = 0.0
     most_probable_kmer = ""
 
     profile_map = create_profile_map(profile, int(k))
 
-    for idx in range(len(text-k)):
+    for idx in range(len(text)-k):
         kmer = text[idx:idx+k]
         kmer_probability = 1.0
 
-        # for this kmer, calculate it's total probability of appearing
-        # which is a product of all its nucleotides probabilities in the map 
-        # 
+        for idx2 in range(len(kmer)):
+            nucleotide = kmer[idx2]
+            kmer_probability *= profile_map[idx2][nucleotide]
+        
+        if kmer_probability > highest_probability:
+            highest_probability = kmer_probability
+            most_probable_kmer = kmer
 
-
-    return
+    return most_probable_kmer
 
 # Input: array of arrays
 def create_profile_map(profile, k):
@@ -48,7 +46,7 @@ def create_profile_map(profile, k):
             nucleotide = get_nucleotide(rowIdx)
             position = colIdx
             probability = profile[rowIdx][colIdx]
-            profile_map[position][nucleotide] = probability
+            profile_map[position][nucleotide] = float(probability)
 
     return profile_map
 
@@ -61,3 +59,5 @@ def get_nucleotide(row):
         return "G"
     else:
         return "T"
+
+print(most_probable_kmer_pattern(text, int(k), profile))

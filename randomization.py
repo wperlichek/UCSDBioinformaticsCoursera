@@ -55,16 +55,17 @@ def build_profile(kmers):
         t_count += 1.0
         g_count += 1.0
         c_count += 1.0
+        revised_len = len(kmers) + 4.0
 
-        a_percent = (a_count / len(kmers))
-        t_percent = (t_count / len(kmers))
-        g_percent = (g_count / len(kmers))
-        c_percent = (c_count / len(kmers))
+        a_percent = (a_count / revised_len)
+        t_percent = (t_count / revised_len)
+        g_percent = (g_count / revised_len)
+        c_percent = (c_count / revised_len)
         
-        matrix[0][idx] = a_percent
-        matrix[1][idx] = t_percent
-        matrix[2][idx] = g_percent
-        matrix[3][idx] = c_percent
+        matrix[0][idx] = round(a_percent, 3)
+        matrix[1][idx] = round(t_percent, 3)
+        matrix[2][idx] = round(g_percent, 3)
+        matrix[3][idx] = round(c_percent, 3)
 
 
     return matrix
@@ -87,4 +88,5 @@ random_kmers = choose_random_kmers(k, dna_strings)
 
 profile = build_profile(random_kmers)
 
-print (profile)
+for line in profile:
+    print(line)

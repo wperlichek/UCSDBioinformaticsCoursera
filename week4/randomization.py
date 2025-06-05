@@ -62,10 +62,10 @@ def build_profile(kmers):
         g_percent = (g_count / revised_len)
         c_percent = (c_count / revised_len)
         
-        matrix[0][idx] = round(a_percent, 3)
-        matrix[1][idx] = round(t_percent, 3)
-        matrix[2][idx] = round(g_percent, 3)
-        matrix[3][idx] = round(c_percent, 3)
+        matrix[0][idx] = round(a_percent, 7)
+        matrix[1][idx] = round(t_percent, 7)
+        matrix[2][idx] = round(g_percent, 7)
+        matrix[3][idx] = round(c_percent, 7)
 
 
     return matrix
@@ -83,7 +83,6 @@ def construct_new_kmers(profile, dna_strings):
             if score > best_score_for_this_string:
                 best_score_for_this_string = score
                 best_kmer_for_this_string = kmer
-
         new_kmers.append(best_kmer_for_this_string)
 
     return new_kmers
@@ -91,8 +90,9 @@ def construct_new_kmers(profile, dna_strings):
 def get_score(profile, kmer): 
     score = 1.0
     for idx in range(len(kmer)):
-        score *= profile[get_row_from_profile(kmer[idx])][idx] 
-    return score
+        idx_prob =  profile[get_row_from_profile(kmer[idx])][idx]
+        score = float(score) * float(idx_prob)
+    return round(score, 7)
 
 def get_row_from_profile(nucleotide):
     if nucleotide == "A":
@@ -104,12 +104,8 @@ def get_row_from_profile(nucleotide):
     else:
         return 3
 
-def randomized_motif_search():
+def randomized_motif_search(profile, random_kmers, dna_strings):
     
-    random_kmers = choose_random_kmers(k, dna_strings)
-    profile = build_profile(random_kmers)
-    new_kmers_from_profile = construct_new_kmers(profile, dna_strings)
-
     print("Initial random set of kmers: ")
 
     for kmer in random_kmers:
@@ -124,9 +120,19 @@ def randomized_motif_search():
     for new_kmer in new_kmers_from_profile:
         print(new_kmer)
 
-    print("So for instance, this kmer: " + new_kmers_from_profile[0] + " should be the best according to profile from dna string " + dna_strings[0])
+    print("So for instance, this kmer: " + new_kmers_from_profile[0] + " should be the best according to profile from dna string " + dna_strings[0] + 
+          " which has a probability of " + str(get_score(profile, new_kmers_from_profile[0])))
     
-    return
+    print("Sliding a window across " + dna_strings[0] + ", we see these probabilities: ")
+
+    length_kmers = len(new_kmers_from_profile[0])
+
+    for idx in range(len(dna_strings[0])-length_kmers):
+        ss = dna_strings[0][idx:idx+length_kmers]
+        prob = get_score(profile, ss)
+        print("String from sliding window: " + ss + ", with probability: " + str(prob))
+    
+    return new_kmers_from_profile
 
 k = 0
 t = 0
@@ -138,4 +144,13 @@ with open("randoms.txt") as File:
     t = int(params[1])
     dna_strings = File.readline().strip().split(" ")
 
-randomized_motif_search()
+final_motifs = []
+
+kmers = choose_random_kmers(k, dna_strings)
+
+for _ in range(1000):
+    profile = build_profile(kmers)
+    new_kmers_from_profile = construct_new_kmers(profile, dna_strings)
+    kmers = randomized_motif_search(profile, new_kmers_from_profile, dna_strings)
+
+print(kmers)

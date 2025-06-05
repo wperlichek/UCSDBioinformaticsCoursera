@@ -25,8 +25,49 @@ def build_profile(kmers):
     # T .5
     # use pseudo counts, so add 1 to all 
 
+    matrix = []
 
-    return
+    for _ in range(4):
+        row = []
+        for idx in range(len(kmers[0])):
+            row.append(0.0)
+        matrix.append(row)
+
+    for idx in range(len(kmers[0])):
+
+        a_count = 0.0
+        t_count = 0.0
+        g_count = 0.0
+        c_count = 0.0
+
+        for kmer in kmers:
+            if kmer[idx] == "A":
+                a_count += 1.0
+            elif kmer[idx] == "T":
+                t_count += 1.0
+            elif kmer[idx] == "G":
+                g_count += 1.0
+            else:
+                c_count += 1.0
+
+        # pseudocount
+        a_count += 1.0
+        t_count += 1.0
+        g_count += 1.0
+        c_count += 1.0
+
+        a_percent = (a_count / len(kmers))
+        t_percent = (t_count / len(kmers))
+        g_percent = (g_count / len(kmers))
+        c_percent = (c_count / len(kmers))
+        
+        matrix[0][idx] = a_percent
+        matrix[1][idx] = t_percent
+        matrix[2][idx] = g_percent
+        matrix[3][idx] = c_percent
+
+
+    return matrix
 
 def construct_kmer_from_profile():
     return
@@ -42,4 +83,8 @@ with open("randoms.txt") as File:
     dna_strings = File.readline().strip().split(" ")
 
 random_kmers = choose_random_kmers(k, dna_strings)
-print(random_kmers)
+#print(random_kmers)
+
+profile = build_profile(random_kmers)
+
+print (profile)

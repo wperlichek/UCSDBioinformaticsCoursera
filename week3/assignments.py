@@ -190,16 +190,30 @@ def median_string_crude(pattern, dna_strings):
             if hamming_distance < min_hamming_distance_found:
                 min_hamming_distance_found = hamming_distance
         total_distance += min_hamming_distance_found
-            
+    
+    print("total distance for string " + pattern + " is " + str(total_distance))
     return total_distance
 
 
-pattern = ""
-dna_strings = []
+# pattern = ""
+# dna_strings = []
 
-with open("median_string.txt") as File: 
-    pattern = File.readline().strip()
-    dna_strings = File.readline().strip().split(" ")
+# with open("median_string.txt") as File: 
+#     pattern = File.readline().strip()
+#     dna_strings = File.readline().strip().split(" ")
 
-res = median_string_crude(pattern, dna_strings)
-print(str(res))
+# res = median_string_crude(pattern, dna_strings)
+# print(str(res))
+
+median_string_crude("ATAACGG", ["CTCGATGAGTAGGAAAGTAGTTTCACTGGGCGAACCACCCCGGCGCTAATCCTAGTGCCC", 
+                                "GCAATCCTACCCGAGGCCACATATCAGTAGGAACTAGAACCACCACGGGTGGCTAGTTTC", 
+                                "GGTGTTGAACCACGGGGTTAGTTTCATCTATTGTAGGAATCGGCTTCAAATCCTACACAG"])
+
+
+dna_strings = ["ATAACGG", "CGTGTAA", "GGTTACT", "AACGCTG", "AACGCTG", "AATCCTA", "GAACCAC"]
+
+
+for dna_string in dna_strings:
+    median_string_crude(dna_string, ["CTCGATGAGTAGGAAAGTAGTTTCACTGGGCGAACCACCCCGGCGCTAATCCTAGTGCCC", 
+                                "GCAATCCTACCCGAGGCCACATATCAGTAGGAACTAGAACCACCACGGGTGGCTAGTTTC", 
+                                "GGTGTTGAACCACGGGGTTAGTTTCATCTATTGTAGGAATCGGCTTCAAATCCTACACAG"])
